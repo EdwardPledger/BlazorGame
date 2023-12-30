@@ -1,0 +1,70 @@
+.enemy[b-rrilt5vup4] {
+    position: absolute;
+    top: 125px;
+    width: 60%;
+}
+
+.enemy-info[b-rrilt5vup4] {
+    border: 3px solid black;
+    width: 50%;
+    float: left;
+}
+
+.enemy-div[b-rrilt5vup4] {
+    height: 50px;
+    width: 25%;
+    float: left;
+}
+
+.enemy-body[b-rrilt5vup4] {
+    border: 3px solid red;
+    background-color: red;
+    height: 100%;
+    width: 50%;
+    margin-left: 50px;
+}
+
+.enemy-message[b-rrilt5vup4] {
+    float: right;
+    width: 25%;
+    border: 3px solid black;
+    height: 50px;
+}
+
+.player[b-rrilt5vup4] {
+    position: absolute;
+    bottom: 25px;
+    width: 60%;
+}
+
+.player-info[b-rrilt5vup4] {
+    float: left;
+    width: 25%;
+    border: 3px solid black;
+}
+
+.player-options[b-rrilt5vup4] {
+    float: left;
+    width: 55%;
+}
+
+.player-message[b-rrilt5vup4] {
+    float: right;
+    border: 3px solid black;
+    height: 50px;
+    width: 20%;
+}
+
+table[b-rrilt5vup4] {
+    border: 3px solid black;
+    margin-left: 20px;
+}
+
+tr[b-rrilt5vup4] {
+    border: 1px solid black;
+}
+
+td[b-rrilt5vup4] {
+    border: 1px solid black;
+    padding: 25px;
+}

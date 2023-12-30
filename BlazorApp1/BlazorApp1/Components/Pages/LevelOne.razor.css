@@ -1,0 +1,70 @@
+﻿.enemy {
+    position: absolute;
+    top: 125px;
+    width: 60%;
+}
+
+.enemy-info {
+    border: 3px solid black;
+    width: 50%;
+    float: left;
+}
+
+.enemy-div {
+    height: 50px;
+    width: 25%;
+    float: left;
+}
+
+.enemy-body {
+    border: 3px solid red;
+    background-color: red;
+    height: 100%;
+    width: 50%;
+    margin-left: 50px;
+}
+
+.enemy-message {
+    float: right;
+    width: 25%;
+    border: 3px solid black;
+    height: 50px;
+}
+
+.player {
+    position: absolute;
+    bottom: 25px;
+    width: 60%;
+}
+
+.player-info {
+    float: left;
+    width: 25%;
+    border: 3px solid black;
+}
+
+.player-options {
+    float: left;
+    width: 55%;
+}
+
+.player-message {
+    float: right;
+    border: 3px solid black;
+    height: 50px;
+    width: 20%;
+}
+
+table {
+    border: 3px solid black;
+    margin-left: 20px;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+td {
+    border: 1px solid black;
+    padding: 25px;
+}

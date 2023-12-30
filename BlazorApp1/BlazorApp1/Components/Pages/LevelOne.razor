@@ -1,0 +1,185 @@
+﻿@page "/levelone"
+@rendermode InteractiveServer
+@using Character
+@using Services
+@inject ICharacterService CharacterService
+
+<h3>LevelOne</h3>
+<div class="enemy">
+    <div class="enemy-info">
+        @if (enemyHuman != null)
+        {
+            <span>@enemyHuman.Name</span>
+            <br />
+            <label>HP:</label>
+            <span>@enemyHuman.HealthPoints</span>
+            <br />
+            <label>MP:</label>
+            <span>@enemyHuman.MagicPoints</span>
+        }
+    </div>
+    <div class="enemy-div">
+        <div class="enemy-body">
+
+        </div>
+    </div>
+    <div class="enemy-message">
+        <span>@enemyMessage</span>
+    </div>
+</div>
+<div class="player">
+    <div class="player-info">
+        @if (character != null)
+        {
+            <span>@character.Name</span>
+            <br />
+            <label>HP:</label>
+            <span>@character.HealthPoints</span>
+            <br />
+            <label>MP:</label>
+            <span>@character.MagicPoints</span>
+        }
+    </div>
+    <div class="player-options">
+        <table>
+            <tr>
+                <td><button class="btn btn-primary" disabled=@isDisabled @onclick="Attack">Attack</button></td>
+                <td><button class="btn btn-primary">Defend</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-primary">Skills</button></td>
+                <td><button class="btn btn-primary">Magic</button></td>
+            </tr>
+        </table>
+    </div>
+    <div class="player-message">
+        <span>@playerMessage</span>
+    </div>
+</div>
+
+@code {
+    private PlayerCharacter? character;
+    private EnemyCharacter? enemyHuman;
+    private CharacterCreator enemies = new HumanCharacter();
+    private Random random = new Random();
+    private string playerMessage = "";
+    private string enemyMessage = "";
+    private bool isPlayer = true;
+    private bool isDisabled = false;
+
+    protected override void OnInitialized()
+    {
+        character = CharacterService.GetCharacter(true);
+        character.CalculateBaseHealth();
+        character.CalculateBaseMagic();
+
+        enemyHuman = enemies.CreateCharacter(1);
+    }
+
+    private async Task Attack()
+    {
+        if (isPlayer)
+        {
+            isDisabled = true;
+
+            enemyMessage = "";
+            if (!IsHit(character.Stats.GetValueOrDefault(StatType.Perception), enemyHuman.Stats.GetValueOrDefault(StatType.Agility)))
+            {
+                playerMessage = "Miss";
+            }
+            else
+            {
+                var attack = character.Stats.GetValueOrDefault(StatType.Strength) * 2;
+
+                if (IsCrit(character.Stats.GetValueOrDefault(StatType.Luck)))
+                {
+                    attack += (int)Math.Ceiling(attack * 1.5);
+                }
+
+                playerMessage = $"Hit for {attack} damage";
+
+                enemyHuman.HealthPoints = CalculateHealth(enemyHuman.HealthPoints, attack);
+
+                if (enemyHuman.HealthPoints == 0)
+                {
+                    playerMessage = "Enemy defaated";
+                    character.ExperiencePoints += enemyHuman.ExperiencePoints;
+
+                    var isLevelUp = character.CalculateLevelUp();
+                    if (isLevelUp)
+                    {
+                        await Task.Delay(1000);
+
+                        character.LevelUp();
+                        playerMessage = "Leveled up!";
+                    }
+
+                    // Call next level
+                }
+            }
+
+            if (enemyHuman.HealthPoints != 0)
+            {
+                isPlayer = false;
+                await Task.Delay(2000);  // So the enemy attack message doesn't appear immediately
+                playerMessage = "";
+                await Attack();
+
+                isDisabled = false;
+            }
+        }
+        else
+        {
+            if (!IsHit(enemyHuman.Stats.GetValueOrDefault(StatType.Perception), character.Stats.GetValueOrDefault(StatType.Agility)))
+            {
+                enemyMessage = "Miss";
+            }
+            else
+            {
+                var attack = enemyHuman.Stats.GetValueOrDefault(StatType.Strength) * 2;
+
+                if (IsCrit(enemyHuman.Stats.GetValueOrDefault(StatType.Luck)))
+                {
+                    attack += (int)Math.Ceiling(attack * 1.5);
+                }
+
+                enemyMessage = $"Hit for {attack} damage";
+
+                character.HealthPoints = CalculateHealth(character.HealthPoints, attack);
+
+                if (character.HealthPoints == 0)
+                {
+                    enemyMessage = "Player defeated";
+                }
+            }
+
+            isPlayer = true;
+        }
+    }
+
+    private bool IsCrit(int luck)
+    {
+        var chance = random.Next(5 + (int)Math.Ceiling(luck * 1.5), 101);
+
+        return chance == 100;
+    }
+
+    // Todo: possibly add graze hits
+    private bool IsHit(int perception, int agility)
+    {
+        var chance = random.Next(10 + (perception * 3) - (int)Math.Ceiling(agility * 1.5), 101);
+        var x = 10 + (perception * 3) - (int)Math.Ceiling(agility * 1.5);
+
+        return chance >= 50;
+    }
+
+    private int CalculateHealth(int health, int damage)
+    {
+        if (health - damage > 0)
+        {
+            return health - damage;
+        }
+
+        return 0;
+    }
+}

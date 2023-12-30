@@ -1,0 +1,62 @@
+﻿@page "/createcharacter"
+@rendermode InteractiveServer
+@using Character
+@inject ILogger<CharacterBase> Logger
+@inject NavigationManager NavigationManager
+
+<PageTitle>Project Text Game</PageTitle>
+
+<h1>CreateCharacter</h1>
+
+<label>Name:</label>
+<input @bind="initialCharacter.Name" />
+<br /><br />
+<label>Race:</label>
+<select @onchange="SelectedRaceChange">
+    @foreach (var race in Enum.GetValues(typeof(RaceType))) 
+    {
+        <option>@race</option> // TODO: Create display name for enum values
+    }
+</select>
+<br />
+<br />
+<table>
+    @foreach (var stat in baseStats)
+    {
+         <tr>
+             <td>@stat.Key:</td>
+             <td>@stat.Value</td>
+         </tr>
+    }
+</table>
+<br />
+<br />
+<button class="btn btn-primary" @onclick="SaveCharacter">Create</button>
+
+@code {
+    private PlayerCharacter initialCharacter = new();
+    private string selectedRace = Enum.Parse(typeof(RaceType), "Human").ToString();
+    private Dictionary<StatType, int> baseStats = BaseRaceStats.GetBaseStats("Human", false);
+
+
+    private void SelectedRaceChange(ChangeEventArgs e) {
+        if (e != null)
+        {
+            selectedRace = e.Value.ToString();
+        }
+
+        baseStats = BaseRaceStats.GetBaseStats(selectedRace, false);
+    }
+
+    private void SaveCharacter()
+    {
+        initialCharacter.Race = (RaceType)(Enum.Parse(typeof(RaceType), selectedRace));
+        initialCharacter.Stats = baseStats;
+        initialCharacter.CalculateBaseHealth();
+        initialCharacter.CalculateBaseMagic();
+
+        NavigationManager.NavigateTo("levelone");
+    }
+
+    // Todo: Create a feature to change stats with a stat pool
+}
